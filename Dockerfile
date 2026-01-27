@@ -32,6 +32,10 @@ RUN pnpm ui:build
 
 ENV NODE_ENV=production
 
+# Create directories for mounted volumes with correct ownership
+RUN mkdir -p /home/node/.clawdbot /home/node/clawd && \
+    chown -R node:node /home/node/.clawdbot /home/node/clawd
+
 # Security hardening: Run as non-root user
 # The node:22-bookworm image includes a 'node' user (uid 1000)
 # This reduces the attack surface by preventing container escape via root privileges
