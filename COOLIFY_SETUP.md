@@ -2,6 +2,21 @@
 
 This file contains instructions for setting up Moltbot with Gemini and Telegram on your Coolify instance.
 
+## ⚙️ Environment Variables
+
+Add these to the **Environment Variables** tab in your Coolify service settings:
+
+| Variable | Value |
+| :--- | :--- |
+| `CLAWDBOT_GATEWAY_TOKEN` | `REDACTED_GATEWAY_TOKEN` |
+| `GEMINI_API_KEY` | `REDACTED_GEMINI_API_KEY` |
+| `CLAWDBOT_AGENT_MODEL` | `google/gemini-3-flash-preview` |
+| `CLAWDBOT_GATEWAY_PASSWORD` | `REDACTED_PASSWORD` |
+| `CLAWDBOT_GATEWAY_PORT` | `18789` |
+| `CLAWDBOT_GATEWAY_BIND` | `lan` |
+
+---
+
 ## 🚀 Post-Deployment Setup
 
 After you have successfully deployed the `clawdbot` service in Coolify, you must manually connect the Gemini model to your agent.
