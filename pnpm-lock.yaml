@@ -6,7 +6,7 @@ settings:
 
 overrides:
   '@sinclair/typebox': 0.34.47
-  hono: 4.11.4
+  hono: 4.11.7
   tar: 7.5.4
 
 importers:
@@ -21,7 +21,7 @@ importers:
         version: 3.975.0
       '@buape/carbon':
         specifier: 0.14.0
-        version: 0.14.0(hono@4.11.4)
+        version: 0.14.0(hono@4.11.7)
       '@clack/prompts':
         specifier: ^0.11.0
         version: 0.11.0
@@ -110,8 +110,8 @@ importers:
         specifier: ^1.39.3
         version: 1.39.3
       hono:
-        specifier: 4.11.4
-        version: 4.11.4
+        specifier: 4.11.7
+        version: 4.11.7
       jiti:
         specifier: ^2.6.1
         version: 2.6.1
