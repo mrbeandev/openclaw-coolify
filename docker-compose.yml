@@ -37,7 +37,8 @@ services:
         "--bind",
         "0.0.0.0",
         "--port",
-        "18789"
+        "18789",
+        "--allow-unconfigured"
       ]
     healthcheck:
       test: ["CMD", "node", "dist/index.js", "health", "--token", "${CLAWDBOT_GATEWAY_TOKEN}"]

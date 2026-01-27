@@ -17,7 +17,7 @@ This project is fully optimized for [Coolify](https://coolify.io/). With the upd
 4. **Deploy**: Click the **Deploy** button.
 
 ## 📦 Persistent Storage
-Coolify will automatically create and manage two volumes:
+The gateway is configured with the `--allow-unconfigured` flag, meaning it will start automatically even on a fresh deployment. Coolify will automatically create and manage two volumes:
 - `clawdbot_config`: Stores your credentials, settings, and sessions.
 - `clawdbot_workspace`: Stores the files and data the bot works with.
 
