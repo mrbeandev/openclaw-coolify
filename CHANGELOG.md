@@ -2,8 +2,14 @@
 
 Docs: https://docs.molt.bot
 
-## 2026.1.26
+## 2026.1.28
 Status: unreleased.
+
+### Changes
+- CLI: Fix "Channel telegram does not support pairing" by ensuring the plugin registry is loaded before checking channel capabilities in the `pairing` command.
+- Telegram: Fix Gemini API integration issues and ensure proper model routing for Telegram DMs.
+
+## 2026.1.26
 
 ### Changes
 - Docker: Optimize `docker-compose.yml` for Coolify deployments with health checks and cleaner environment variable handling.
