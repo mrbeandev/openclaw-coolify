@@ -1,45 +1,59 @@
 services:
-  moltbot-gateway:
-    image: ${CLAWDBOT_IMAGE:-moltbot:local}
+  clawdbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - CLAWDBOT_DOCKER_APT_PACKAGES=${CLAWDBOT_DOCKER_APT_PACKAGES:-}
+    container_name: clawdbot
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    # Uncomment the next two lines if you want to use Docker sandboxing from within the container
+    # user: root # Required to access docker socket if GIDs don't match
+    # volumes:
+    #   - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      HOME: /home/node
-      TERM: xterm-256color
-      CLAWDBOT_GATEWAY_TOKEN: ${CLAWDBOT_GATEWAY_TOKEN}
-      CLAUDE_AI_SESSION_KEY: ${CLAUDE_AI_SESSION_KEY}
-      CLAUDE_WEB_SESSION_KEY: ${CLAUDE_WEB_SESSION_KEY}
-      CLAUDE_WEB_COOKIE: ${CLAUDE_WEB_COOKIE}
+      - NODE_ENV=production
+      - CLAWDBOT_GATEWAY_TOKEN=${CLAWDBOT_GATEWAY_TOKEN}
+      - CLAUDE_AI_SESSION_KEY=${CLAUDE_AI_SESSION_KEY:-}
+      - CLAUDE_WEB_SESSION_KEY=${CLAUDE_WEB_SESSION_KEY:-}
+      - CLAUDE_WEB_COOKIE=${CLAUDE_WEB_COOKIE:-}
+      - CLAWDBOT_GATEWAY_BIND=0.0.0.0
+      - CLAWDBOT_GATEWAY_PORT=18789
+      - TERM=xterm-256color
+      - HOME=/home/node
     volumes:
-      - ${CLAWDBOT_CONFIG_DIR}:/home/node/.clawdbot
-      - ${CLAWDBOT_WORKSPACE_DIR}:/home/node/clawd
+      - clawdbot_config:/home/node/.clawdbot
+      - clawdbot_workspace:/home/node/clawd
     ports:
       - "${CLAWDBOT_GATEWAY_PORT:-18789}:18789"
       - "${CLAWDBOT_BRIDGE_PORT:-18790}:18790"
-    init: true
-    restart: unless-stopped
     command:
       [
         "node",
         "dist/index.js",
         "gateway",
         "--bind",
-        "${CLAWDBOT_GATEWAY_BIND:-lan}",
+        "0.0.0.0",
         "--port",
-        "${CLAWDBOT_GATEWAY_PORT:-18789}"
+        "18789"
       ]
+    healthcheck:
+      test: ["CMD", "node", "dist/index.js", "health", "--token", "${CLAWDBOT_GATEWAY_TOKEN}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
-  moltbot-cli:
-    image: ${CLAWDBOT_IMAGE:-moltbot:local}
-    environment:
-      HOME: /home/node
-      TERM: xterm-256color
-      BROWSER: echo
-      CLAUDE_AI_SESSION_KEY: ${CLAUDE_AI_SESSION_KEY}
-      CLAUDE_WEB_SESSION_KEY: ${CLAUDE_WEB_SESSION_KEY}
-      CLAUDE_WEB_COOKIE: ${CLAUDE_WEB_COOKIE}
-    volumes:
-      - ${CLAWDBOT_CONFIG_DIR}:/home/node/.clawdbot
-      - ${CLAWDBOT_WORKSPACE_DIR}:/home/node/clawd
-    stdin_open: true
-    tty: true
-    init: true
-    entrypoint: ["node", "dist/index.js"]
+volumes:
+  clawdbot_config:
+    labels:
+      - "coolify.managed=true"
+  clawdbot_workspace:
+    labels:
+      - "coolify.managed=true"

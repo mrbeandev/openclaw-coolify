@@ -6,6 +6,8 @@ Docs: https://docs.molt.bot
 Status: unreleased.
 
 ### Changes
+- Docker: Optimize `docker-compose.yml` for Coolify deployments with health checks and cleaner environment variable handling.
+- Docs: Add `README-COOLIFY.md` with step-by-step instructions for hosting on Coolify.
 - Rebrand: rename the npm package/CLI to `moltbot`, add a `moltbot` compatibility shim, and move extensions to the `@moltbot/*` scope.
 - Commands: group /help and /commands output with Telegram paging. (#2504) Thanks @hougangdev.
 - macOS: limit project-local `node_modules/.bin` PATH preference to debug builds (reduce PATH hijacking risk).
