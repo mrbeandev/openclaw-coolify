@@ -32,9 +32,23 @@ RUN pnpm ui:build
 
 ENV NODE_ENV=production
 
-# Create directories for mounted volumes with correct ownership
-RUN mkdir -p /home/node/.clawdbot /home/node/clawd && \
-    chown -R node:node /home/node/.clawdbot /home/node/clawd
+# Create directories for mounted volumes and runtime data with correct ownership
+# These directories are needed by:
+# - /home/node/.clawdbot: Main config/state directory
+# - /home/node/.clawdbot/cron: Cron job storage
+# - /home/node/.clawdbot/credentials: OAuth and auth tokens
+# - /home/node/.clawdbot/sessions: Active session state
+# - /home/node/clawd: Workspace root
+# - /home/node/clawd/canvas: Canvas host files
+# - /tmp/moltbot: Runtime logs
+RUN mkdir -p \
+    /home/node/.clawdbot/cron \
+    /home/node/.clawdbot/credentials \
+    /home/node/.clawdbot/sessions \
+    /home/node/.clawdbot/extensions \
+    /home/node/clawd/canvas \
+    /tmp/moltbot && \
+    chown -R node:node /home/node/.clawdbot /home/node/clawd /tmp/moltbot
 
 # Security hardening: Run as non-root user
 # The node:22-bookworm image includes a 'node' user (uid 1000)
