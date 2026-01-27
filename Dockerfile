@@ -48,7 +48,10 @@ RUN mkdir -p \
     /home/node/.clawdbot/extensions \
     /home/node/clawd/canvas \
     /tmp/moltbot && \
-    chown -R node:node /home/node/.clawdbot /home/node/clawd /tmp/moltbot
+    chown -R node:node /home/node/.clawdbot /home/node/clawd /tmp/moltbot && \
+    ln -s /app/dist/entry.js /usr/local/bin/moltbot && \
+    ln -s /app/dist/entry.js /usr/local/bin/clawdbot && \
+    chmod +x /app/dist/entry.js
 
 # Security hardening: Run as non-root user
 # The node:22-bookworm image includes a 'node' user (uid 1000)
