@@ -229,7 +229,10 @@ export function parseApiErrorInfo(raw?: string): ApiErrorInfo | null {
 
 export function formatRawAssistantErrorForUi(raw?: string): string {
   const trimmed = (raw ?? "").trim();
-  if (!trimmed) return "LLM request failed with an unknown error.";
+  if (!trimmed) {
+    console.error(`[debug] formatRawAssistantErrorForUi received empty raw error. Original: ${JSON.stringify(raw)}`);
+    return "LLM request failed with an unknown error.";
+  }
 
   const httpMatch = trimmed.match(HTTP_STATUS_PREFIX_RE);
   if (httpMatch) {
@@ -258,6 +261,11 @@ export function formatAssistantErrorText(
   const raw = (msg.errorMessage ?? "").trim();
   if (msg.stopReason !== "error" && !raw) return undefined;
   if (!raw) return "LLM request failed with an unknown error.";
+
+  // Handle known library typo/generic error
+  if (raw.includes("An unkown error ocurred")) {
+    return "The AI model terminated the response unexpectedly (likely due to safety filters or context limits). Please try again with a different prompt.";
+  }
 
   const unknownTool =
     raw.match(/unknown tool[:\s]+["']?([a-z0-9_-]+)["']?/i) ??
