@@ -15,11 +15,13 @@ services:
     #   - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - NODE_ENV=production
+      - OPENCLAW_GATEWAY_TOKEN=${CLAWDBOT_GATEWAY_TOKEN}
       - CLAWDBOT_GATEWAY_TOKEN=${CLAWDBOT_GATEWAY_TOKEN}
       - CLAUDE_AI_SESSION_KEY=${CLAUDE_AI_SESSION_KEY:-}
       - CLAUDE_WEB_SESSION_KEY=${CLAUDE_WEB_SESSION_KEY:-}
       - CLAUDE_WEB_COOKIE=${CLAUDE_WEB_COOKIE:-}
       - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - OPENCLAW_AGENT_MODEL=${CLAWDBOT_AGENT_MODEL:-google/gemini-1.5-flash}
       - CLAWDBOT_AGENT_MODEL=${CLAWDBOT_AGENT_MODEL:-google/gemini-1.5-flash}
       - CLAWDBOT_GATEWAY_PASSWORD=${CLAWDBOT_GATEWAY_PASSWORD:-}
       - CLAWDBOT_GATEWAY_BIND=lan
@@ -32,15 +34,16 @@ services:
     ports:
       - "${CLAWDBOT_GATEWAY_PORT:-18789}:18789"
       - "${CLAWDBOT_BRIDGE_PORT:-18790}:18790"
+    init: true
     command:
       [
         "node",
         "dist/index.js",
         "gateway",
         "--bind",
-        "lan",
+        "${CLAWDBOT_GATEWAY_BIND:-lan}",
         "--port",
-        "18789",
+        "${CLAWDBOT_GATEWAY_PORT:-18789}",
         "--allow-unconfigured"
       ]
     # Disable health checks as they can block Traefik routing if failing
