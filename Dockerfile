@@ -33,23 +33,23 @@ ENV NODE_ENV=production
 
 # Create directories for mounted volumes and runtime data with correct ownership
 # These directories are needed by:
-# - /home/node/.clawdbot: Main config/state directory
-# - /home/node/.clawdbot/cron: Cron job storage
-# - /home/node/.clawdbot/credentials: OAuth and auth tokens
-# - /home/node/.clawdbot/sessions: Active session state
-# - /home/node/clawd: Workspace root
-# - /home/node/clawd/canvas: Canvas host files
-# - /tmp/moltbot: Runtime logs
+# - /home/node/.openclaw: Main config/state directory
+# - /home/node/.openclaw/cron: Cron job storage
+# - /home/node/.openclaw/credentials: OAuth and auth tokens
+# - /home/node/.openclaw/sessions: Active session state
+# - /home/node/openclaw: Workspace root
+# - /home/node/openclaw/canvas: Canvas host files
+# - /tmp/openclaw: Runtime logs
 RUN mkdir -p \
-    /home/node/.clawdbot/cron \
-    /home/node/.clawdbot/credentials \
-    /home/node/.clawdbot/sessions \
-    /home/node/.clawdbot/extensions \
-    /home/node/clawd/canvas \
-    /tmp/moltbot && \
-    chown -R node:node /home/node/.clawdbot /home/node/clawd /tmp/moltbot && \
+    /home/node/.openclaw/cron \
+    /home/node/.openclaw/credentials \
+    /home/node/.openclaw/sessions \
+    /home/node/.openclaw/extensions \
+    /home/node/openclaw/canvas \
+    /tmp/openclaw && \
+    chown -R node:node /home/node/.openclaw /home/node/openclaw /tmp/openclaw && \
     ln -s /app/dist/entry.js /usr/local/bin/moltbot && \
-    ln -s /app/dist/entry.js /usr/local/bin/clawdbot && \
+    ln -s /app/dist/entry.js /usr/local/bin/openclaw && \
     chmod +x /app/dist/entry.js
 
 # Security hardening: Run as non-root user
