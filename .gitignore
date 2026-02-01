@@ -68,6 +68,10 @@ apps/ios/*.mobileprovision
 IDENTITY.md
 USER.md
 .tgz
+.clawdbot/
+.openclaw/
+openclaw/
+clawd/
 
 # local tooling
 .serena/
