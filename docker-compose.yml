@@ -36,6 +36,7 @@ services:
       - CLAUDE_WEB_COOKIE=${CLAUDE_WEB_COOKIE:-}
       # UI Security Override
       - OPENCLAW_CONTROL_UI_ALLOW_INSECURE_AUTH=${OPENCLAW_CONTROL_UI_ALLOW_INSECURE_AUTH:-true}
+    working_dir: /home/node/openclaw
     volumes:
       - clawdbot_config:/home/node/.openclaw
       - clawdbot_workspace:/home/node/openclaw
