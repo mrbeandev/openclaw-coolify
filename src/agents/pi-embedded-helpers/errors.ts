@@ -1,8 +1,7 @@
 import type { AssistantMessage } from "@mariozechner/pi-ai";
-
 import type { OpenClawConfig } from "../../config/config.js";
-import { formatSandboxToolPolicyBlockedMessage } from "../sandbox.js";
 import type { FailoverReason } from "./types.js";
+import { formatSandboxToolPolicyBlockedMessage } from "../sandbox.js";
 
 export function isContextOverflowError(errorMessage?: string): boolean {
   if (!errorMessage) {
@@ -284,7 +283,9 @@ export function parseApiErrorInfo(raw?: string): ApiErrorInfo | null {
 export function formatRawAssistantErrorForUi(raw?: string): string {
   const trimmed = (raw ?? "").trim();
   if (!trimmed) {
-    console.error(`[debug] formatRawAssistantErrorForUi received empty raw error. Original: ${JSON.stringify(raw)}`);
+    console.error(
+      `[debug] formatRawAssistantErrorForUi received empty raw error. Original: ${JSON.stringify(raw)}`,
+    );
     return "LLM request failed with an unknown error.";
   }
 
