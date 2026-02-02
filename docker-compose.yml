@@ -46,7 +46,7 @@ services:
     command:
       [
         "node",
-        "dist/index.js",
+        "/app/dist/index.js",
         "gateway",
         "--bind",
         "${OPENCLAW_GATEWAY_BIND:-lan}",
