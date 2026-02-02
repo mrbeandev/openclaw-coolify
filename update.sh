@@ -1,57 +1,69 @@
 #!/bin/bash
 
-# OpenClaw/Moltbot Auto-Updater for Coolify
-# -----------------------------------------
-# This script safely updates your repository to the latest stable release
-# while preserving your Coolify-specific configurations.
+# 🦞 OpenClaw Auto-Updater for Coolify
+# ------------------------------------
+# Usage: ./update.sh [channel]
+# Channels: stable (default), beta, dev
 
 set -e
 
-# 1. Setup Remote
+CHANNEL="${1:-stable}"
 REMOTE_NAME="upstream"
-UPSTREAM_URL="https://github.com/openclaw/openclaw.git" # Official OpenClaw Repo
+UPSTREAM_URL="https://github.com/openclaw/openclaw.git"
 
 echo "🦞 OpenClaw Updater"
 echo "-------------------"
+echo "📡 Channel: $CHANNEL"
 
-# Check if we are inside a valid git repo
+# 1. Setup Remote
 if [ ! -d ".git" ]; then
-    echo "❌ Error: Not a git repository. Please run this from the root of your installation."
+    echo "❌ Error: Not a git repository."
     exit 1
 fi
 
-# Ensure upstream is configured
 if ! git remote | grep -q "^${REMOTE_NAME}$"; then
-    echo "🔹 Configuring upstream remote ($UPSTREAM_URL)..."
+    echo "🔹 Configuring upstream remote..."
     git remote add $REMOTE_NAME $UPSTREAM_URL
-else
-    echo "🔹 Upstream remote is configured."
 fi
 
-# 2. Fetch Latest Info
-echo "🔹 Fetching latest tags..."
-git fetch $REMOTE_NAME --tags --quiet
+# 2. Fetch Latest
+echo "🔹 Fetching tags from $UPSTREAM_URL..."
+git fetch $REMOTE_NAME --tags --quiet || { echo "❌ Network error: Could not fetch from upstream."; exit 1; }
 
-# Find latest stable tag (filters out -beta, -alpha, etc)
-LATEST_TAG=$(git tag -l "v*" | grep -v "-" | sort -V | tail -n 1)
+# 3. Determine Version
+TARGET_TAG=""
 
-if [ -z "$LATEST_TAG" ]; then
-    echo "❌ Error: Could not find any stable tags."
+if [ "$CHANNEL" == "dev" ]; then
+    # Dev = Latest commit on main
+    echo "🔹 targeted: latest main (dev)"
+    TARGET_TAG="$REMOTE_NAME/main"
+    git fetch $REMOTE_NAME main --quiet
+elif [ "$CHANNEL" == "beta" ]; then
+    # Beta = Latest tag containing 'beta'
+    TARGET_TAG=$(git tag -l "v*" | grep "beta" | sort -V | tail -n 1)
+else
+    # Stable = Latest tag NOT containing prerelease keywords (supports -patch versions like v2026.1.1-1)
+    TARGET_TAG=$(git tag -l "v*" | grep -v -E "(beta|alpha|dev|rc|test)" | sort -V | tail -n 1)
+fi
+
+if [ -z "$TARGET_TAG" ]; then
+    echo "❌ Error: Could not find a suitable version for channel '$CHANNEL'."
     exit 1
 fi
 
-CURRENT_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "unknown")
+CURRENT_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || git rev-parse --short HEAD)
+echo "ℹ️  Current: $CURRENT_VERSION"
+echo "ℹ️  Target:  $TARGET_TAG"
 
-echo "ℹ️  Current Version: $CURRENT_TAG"
-echo "ℹ️  Latest Version:  $LATEST_TAG"
-
-if [ "$CURRENT_TAG" == "$LATEST_TAG" ]; then
-    echo "✅ You are already on the latest version."
+if [ "$CURRENT_VERSION" == "$TARGET_TAG" ]; then
+    echo "✅ You are already up to date."
+    # Optional: Allow force update? For now, exit.
     exit 0
 fi
 
-# 3. Perform Update
-read -p "❓ Update to $LATEST_TAG? (y/n) " -n 1 -r
+# 4. Confirm & Install
+echo
+read -p "❓ Update to $TARGET_TAG? (y/n) " -n 1 -r
 echo
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     echo "❌ Update cancelled."
@@ -60,55 +72,46 @@ fi
 
 echo "🚀 Starting update..."
 
-# Stash any uncommitted local changes to be safe
+# Stash local changes
 if [[ -n $(git status -s) ]]; then
     echo "📦 Stashing local changes..."
     git stash push -m "Auto-update stash $(date)"
 fi
 
-# Try to merge
-echo "🔹 Merging $LATEST_TAG..."
-if git merge "$LATEST_TAG" --no-edit; then
+# Merge
+echo "🔹 Merging..."
+if git merge "$TARGET_TAG" --no-edit; then
     echo "✅ Merge successful."
 else
     echo "⚠️  Merge conflicts detected."
-    echo "🔧 Attempting to preserve your Coolify configurations..."
-    
-    # Conflict Resolution Strategy:
-    # We PRIORITIZE our local Coolify config files (docker-compose, Dockerfile)
-    # forcing them to keep 'OUR' version (the one currently working on Coolify).
+    echo "🔧 Preserving Coolify configurations (docker-compose.yml, Dockerfile)..."
     
     CONFLICTS=$(git diff --name-only --diff-filter=U)
     
-    if echo "$CONFLICTS" | grep -q "docker-compose.yml"; then
-        echo "   - Keeping local docker-compose.yml"
-        git checkout HEAD -- docker-compose.yml
-        git add docker-compose.yml
-    fi
-    
-    if echo "$CONFLICTS" | grep -q "Dockerfile"; then
-        echo "   - Keeping local Dockerfile"
-        git checkout HEAD -- Dockerfile
-        git add Dockerfile
-    fi
+    # Priority protection for Coolify config
+    for FILE in docker-compose.yml Dockerfile; do
+        if echo "$CONFLICTS" | grep -q "$FILE"; then
+            echo "   - Keeping local $FILE"
+            git checkout HEAD -- "$FILE"
+            git add "$FILE"
+        fi
+    done
 
-    # Check if there are still unresolved conflicts
-    REMAINING_CONFLICTS=$(git diff --name-only --diff-filter=U)
-    if [ -n "$REMAINING_CONFLICTS" ]; then
-        echo "❌ Automated resolution failed for these files:"
-        echo "$REMAINING_CONFLICTS"
-        echo "Please manually resolve the conflicts, commit, and push."
+    # Check remaining
+    REMAINING=$(git diff --name-only --diff-filter=U)
+    if [ -n "$REMAINING" ]; then
+        echo "❌ Automated resolution failed for: $REMAINING"
+        echo "Please resolve manually."
         exit 1
     else
         git commit --no-edit
-        echo "✅ Conflicts resolved (Coolify configs protected)."
+        echo "✅ Conflicts resolved."
     fi
 fi
 
-# 4. Push to Origin
-echo "🔄 Pushing updated code to your repository..."
+# 5. Push to Deploy
+echo "🔄 Pushing to origin (triggers Coolify deploy)..."
 git push origin HEAD
 
 echo "-------------------"
 echo "🎉 Update Complete!"
-echo "👉 Coolify should now detect the new commit and redeploy your bot."
