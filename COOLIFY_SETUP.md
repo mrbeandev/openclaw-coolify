@@ -8,12 +8,47 @@ Add these to the **Environment Variables** tab in your Coolify service settings:
 
 | Variable | Value |
 | :--- | :--- |
-| `CLAWDBOT_GATEWAY_TOKEN` | `REDACTED_GATEWAY_TOKEN` |
-| `GEMINI_API_KEY` | `REDACTED_GEMINI_API_KEY` |
+| `CLAWDBOT_GATEWAY_TOKEN` | `n05QgrsNXlFmzJMcxxxxxxxxxxxxxxxxxzVj68JpCahFM4nrolucuoNb7` |
+| `GEMINI_API_KEY` | `AIzaSyBZGlZ1xKePVTIRxxxxxxxxxxxxxxxxxxJS8` |
 | `CLAWDBOT_AGENT_MODEL` | `google/gemini-3-flash-preview` |
-| `CLAWDBOT_GATEWAY_PASSWORD` | `REDACTED_PASSWORD` |
+| `CLAWDBOT_GATEWAY_PASSWORD` | `xxxxxxxxx` |
 | `CLAWDBOT_GATEWAY_PORT` | `18789` |
 | `CLAWDBOT_GATEWAY_BIND` | `lan` |
+
+---
+
+## 🌐 Gateway WebUI Setup
+
+> ⚠️ **Requirement**: The Gateway WebUI will only work if you have pointed and connected a **domain** to your Coolify instance. Ensure your domain is properly configured before proceeding.
+
+After deployment, access the Gateway WebUI at your configured port (default: `18789`).
+
+### 1. Configure Gateway Token
+1.  Navigate to **Overview** in the WebUI
+2.  Enter your `CLAWDBOT_GATEWAY_TOKEN` in the **Gateway Token** input field
+3.  The system will prompt you to **approve this device**
+
+### 2. Approve Device Access
+Open the **Terminal** for your `clawdbot` container in Coolify and run:
+
+```bash
+# List pending device requests
+openclaw devices list
+
+# Approve the device (replace <request_id> with actual ID from list)
+openclaw devices approve <request_id>
+```
+
+### 3. (Optional) Add Antigravity Plugin
+If you want to use Google Antigravity authentication:
+
+```bash
+# Enable the plugin
+openclaw plugins enable google-antigravity-auth
+
+# Login and set as default provider
+openclaw models auth login --provider google-antigravity --set-default
+```
 
 ---
 
