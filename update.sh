@@ -110,8 +110,8 @@ else
 fi
 
 # 5. Push to Deploy
-echo "🔄 Pushing to origin (triggers Coolify deploy)..."
-git push origin HEAD
+echo "🔄 Pushing to public-fork (triggers Coolify deploy)..."
+git push public-fork HEAD
 
 echo "-------------------"
 echo "🎉 Update Complete!"
