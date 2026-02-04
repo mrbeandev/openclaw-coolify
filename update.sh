@@ -28,7 +28,7 @@ fi
 
 # 2. Fetch Latest
 echo "🔹 Fetching tags from $UPSTREAM_URL..."
-git fetch $REMOTE_NAME --tags --quiet || { echo "❌ Network error: Could not fetch from upstream."; exit 1; }
+git fetch $REMOTE_NAME --tags --force --quiet || { echo "❌ Network error: Could not fetch from upstream."; exit 1; }
 
 # 3. Determine Version
 TARGET_TAG=""
