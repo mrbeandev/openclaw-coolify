@@ -84,12 +84,12 @@ if git merge "$TARGET_TAG" --no-edit; then
     echo "✅ Merge successful."
 else
     echo "⚠️  Merge conflicts detected."
-    echo "🔧 Preserving Coolify configurations (docker-compose.yml, Dockerfile)..."
+    echo "🔧 Preserving Coolify configurations (docker-compose.yaml, Dockerfile)..."
     
     CONFLICTS=$(git diff --name-only --diff-filter=U)
     
     # Priority protection for Coolify config
-    for FILE in docker-compose.yml Dockerfile; do
+    for FILE in docker-compose.yaml Dockerfile; do
         if echo "$CONFLICTS" | grep -q "$FILE"; then
             echo "   - Keeping local $FILE"
             git checkout HEAD -- "$FILE"
