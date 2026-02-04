@@ -80,38 +80,29 @@ fi
 
 # Merge
 echo "🔹 Merging..."
-if git merge "$TARGET_TAG" --no-edit; then
-    echo "✅ Merge successful."
-else
-    echo "⚠️  Merge conflicts detected."
-    echo "🔧 Preserving Coolify configurations (docker-compose.yaml, Dockerfile)..."
-    
-    CONFLICTS=$(git diff --name-only --diff-filter=U)
-    
-    # Priority protection for Coolify config
-    for FILE in docker-compose.yaml Dockerfile; do
-        if echo "$CONFLICTS" | grep -q "$FILE"; then
-            echo "   - Keeping local $FILE"
-            git checkout HEAD -- "$FILE"
-            git add "$FILE"
-        fi
-    done
+# Attempt merge without committing so we can fix files
+git merge "$TARGET_TAG" --no-edit --allow-unrelated-histories --no-commit -X theirs || true
 
-    # Check remaining
-    REMAINING=$(git diff --name-only --diff-filter=U)
-    if [ -n "$REMAINING" ]; then
-        echo "❌ Automated resolution failed for: $REMAINING"
-        echo "Please resolve manually."
-        exit 1
-    else
-        git commit --no-edit
-        echo "✅ Conflicts resolved."
+echo "🔧 Preserving local configurations..."
+# Force restore our critical files from the pre-merge state (HEAD)
+for FILE in docker-compose.yaml Dockerfile README.md update.sh; do
+    if git checkout HEAD -- "$FILE" 2>/dev/null; then
+        echo "   - Restored local $FILE"
+        git add "$FILE"
     fi
+done
+
+# Check if we have remaining conflicts
+REMAINING=$(git diff --name-only --diff-filter=U)
+if [ -n "$REMAINING" ]; then
+    echo "⚠️  Some conflicts require manual resolution: $REMAINING"
+    exit 1
+else
+    git commit -m "chore: auto-update to $TARGET_TAG" --no-edit || echo "ℹ️ Nothing new to commit."
+    echo "✅ Update prepared locally."
 fi
 
-# 5. Push to Deploy
-echo "🔄 Pushing to public-fork (triggers Coolify deploy)..."
-git push public-fork HEAD
-
+# 5. Done
 echo "-------------------"
-echo "🎉 Update Complete!"
+echo "🎉 Local update files prepared!"
+echo "Check your files and run 'git push public-fork HEAD' when ready."
