@@ -13,7 +13,6 @@ import { formatDocsLink } from "../terminal/links.js";
 import { renderTable } from "../terminal/table.js";
 import { theme } from "../terminal/theme.js";
 import { formatCliCommand } from "./command-format.js";
-import { ensurePluginRegistryLoaded } from "./plugin-registry.js";
 
 /** Parse channel, allowing extension channels not in core registry. */
 function parseChannel(raw: unknown, channels: PairingChannel[]): PairingChannel {
@@ -51,7 +50,6 @@ async function notifyApproved(channel: PairingChannel, id: string) {
 }
 
 export function registerPairingCli(program: Command) {
-  ensurePluginRegistryLoaded();
   const channels = listPairingChannels();
   const pairing = program
     .command("pairing")
