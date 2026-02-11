@@ -47,18 +47,27 @@ fi
 
 # 6. Start Chromium (listening on CDP)
 # We use --remote-debugging-port to allow OpenClaw to connect
-chromium \
-  --no-sandbox \
-  --disable-gpu \
-  --disable-dev-shm-usage \
-  --remote-debugging-port=$CDP_PORT \
-  --remote-debugging-address=127.0.0.1 \
-  --no-first-run \
-  --no-default-browser-check \
-  --user-data-dir=$HOME/.config/chromium \
-  --window-position=0,0 \
-  --window-size=${RESOLUTION%x*} \
-  about:blank > /tmp/chromium.log 2>&1 &
+# Start Chromium in a loop to ensure it stays alive
+# If you (or the AI) close it, it will respawn automatically.
+(
+  while true; do
+    chromium \
+      --no-sandbox \
+      --disable-gpu \
+      --disable-dev-shm-usage \
+      --remote-debugging-port=$CDP_PORT \
+      --remote-debugging-address=127.0.0.1 \
+      --no-first-run \
+      --no-default-browser-check \
+      --user-data-dir=$HOME/.config/chromium \
+      --window-position=0,0 \
+      --window-size=${RESOLUTION%x*} \
+      about:blank > /tmp/chromium.log 2>&1
+    
+    echo "Browser closed. Restarting in 2 seconds..."
+    sleep 2
+  done
+) &
 
 echo "Browser environment started."
 echo "CDP endpoint: http://127.0.0.1:$CDP_PORT"
