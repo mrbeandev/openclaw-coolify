@@ -77,6 +77,17 @@ CONFIG_DIR="$HOME/.openclaw"
 CONFIG_FILE="$CONFIG_DIR/openclaw.json"
 
 mkdir -p "$CONFIG_DIR"
+
+# Check for legacy config (moltbot.json) and migrate if openclaw.json is missing or new
+LEGACY_CONFIG="$CONFIG_DIR/moltbot.json"
+if [ -f "$LEGACY_CONFIG" ]; then
+  # If openclaw.json doesn't exist, OR it's very small (likely just our auto-generated empty one)
+  if [ ! -f "$CONFIG_FILE" ] || [ $(stat -c%s "$CONFIG_FILE" 2>/dev/null || echo 0) -lt 200 ]; then
+    echo "Migrating legacy config $LEGACY_CONFIG to $CONFIG_FILE..."
+    cp "$LEGACY_CONFIG" "$CONFIG_FILE"
+  fi
+fi
+
 if [ ! -f "$CONFIG_FILE" ]; then
   echo "{}" > "$CONFIG_FILE"
 fi
