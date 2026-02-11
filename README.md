@@ -143,6 +143,13 @@ You can view the browser session directly from your web browser using the built-
 
 The bot is automatically configured to use this browser. It can open tabs, click elements, and you can see it all happening live!
 
+### ⚠️ Security Warnings & Threats
+
+- **Weak Passwords**: The default VNC password is `openclaw`. **CHANGE THIS** immediately in your Coolify environment variables (`VNC_PASSWORD`).
+- **Firewall Exposure**: If using direct IP access (`http://ip:6080`), you are bypassing some security layers. Ensure you restrict access to your IP only via firewall rules (e.g., AWS Security Groups, UFW).
+- **Public Access**: Never expose the VNC port (6080) to the public internet without a strong password or VPN. Anyone with access can view the screen and control the mouse/keyboard.
+- **Sensitive Data**: Avoid using the bot to log into highly sensitive personal banking or primary email accounts unless you have secured the VNC connection. The VNC stream is viewable by anyone with the password.
+
 ---
 
 ## 📱 Telegram / Discord Setup
