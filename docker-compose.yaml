@@ -46,18 +46,8 @@ services:
       - "${OPENCLAW_GATEWAY_PORT:-18789}:18789"
       - "${NOVNC_PORT:-6080}:6080"
     init: true
-    command:
-      [
-        "./scripts/start-vnc.sh",
-        "node",
-        "dist/index.js",
-        "gateway",
-        "--bind",
-        "${OPENCLAW_GATEWAY_BIND:-lan}",
-        "--port",
-        "18789",
-        "--allow-unconfigured",
-      ]
+    command: >
+      /bin/bash -c "./scripts/start-vnc.sh node dist/index.js gateway --bind ${OPENCLAW_GATEWAY_BIND:-lan} --port 18789 --allow-unconfigured"
     # Health check for Traefik/Coolify
     healthcheck:
       test:
