@@ -27,7 +27,11 @@ fluxbox > /dev/null 2>&1 &
 
 # 3. Setup VNC Password
 mkdir -p ~/.vnc
-echo "$VNC_PASSWORD" | x11vnc -storepasswd pipe ~/.vnc/passwd
+# x11vnc -storepasswd expects [password] [file]
+# We truncate to 8 chars because standard VNC auth is limited to 8 chars
+# and mismatch between stored and typed password can cause issues.
+VNC_PASS_SAFE=${VNC_PASSWORD:0:8}
+x11vnc -storepasswd "$VNC_PASS_SAFE" ~/.vnc/passwd
 chmod 600 ~/.vnc/passwd
 
 # 4. Start VNC Server (x11vnc)
