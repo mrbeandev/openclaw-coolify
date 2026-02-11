@@ -110,4 +110,41 @@ fi
 export OPENCLAW_BROWSER_CDP_URL=${OPENCLAW_BROWSER_CDP_URL:-http://127.0.0.1:$CDP_PORT}
 export OPENCLAW_BROWSER_EXECUTABLE_PATH=${OPENCLAW_BROWSER_EXECUTABLE_PATH:-/usr/bin/chromium}
 
+# Ensure browser executable path is set in config (persisted via config file)
+# This is robust against app updates because start-vnc.sh is preserved,
+# and it updates the config file which is also preserved.
+if [ -f "$CONFIG_FILE" ]; then
+  node -e "
+    const fs = require('fs');
+    const path = require('path');
+    const configFile = process.env.CONFIG_FILE;
+    const exePath = process.env.OPENCLAW_BROWSER_EXECUTABLE_PATH;
+    
+    // Try to load json5 if available (in app dependencies), else fallback to JSON
+    let JSON5 = JSON;
+    try { JSON5 = require('json5'); } catch (e) {}
+
+    try {
+      if (fs.existsSync(configFile)) {
+        const content = fs.readFileSync(configFile, 'utf8');
+        // If file is empty, initialize empty object
+        const config = content.trim() ? JSON5.parse(content) : {};
+        
+        // Ensure browser config object exists
+        if (!config.browser) config.browser = {};
+        
+        // Only update if not already set correctly
+        if (config.browser.executablePath !== exePath) {
+          config.browser.executablePath = exePath;
+          // Write back as standard JSON (indented)
+          fs.writeFileSync(configFile, JSON.stringify(config, null, 2));
+          console.log('Updated browser.executablePath to ' + exePath + ' in ' + configFile);
+        }
+      }
+    } catch (err) {
+      console.warn('Failed to update browser config in ' + configFile + ':', err.message);
+    }
+  "
+fi
+
 exec "$@"
