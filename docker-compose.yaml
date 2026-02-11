@@ -34,14 +34,21 @@ services:
       - CLAUDE_WEB_COOKIE=${CLAUDE_WEB_COOKIE:-}
       # UI Security Override
       - OPENCLAW_CONTROL_UI_ALLOW_INSECURE_AUTH=${OPENCLAW_CONTROL_UI_ALLOW_INSECURE_AUTH:-true}
+      # Browser/VNC Configuration
+      - VNC_PASSWORD=${VNC_PASSWORD:-openclaw}
+      - VNC_PORT=${VNC_PORT:-5900}
+      - NOVNC_PORT=${NOVNC_PORT:-6080}
+      - CDP_PORT=${CDP_PORT:-9222}
     volumes:
       - clawdbot_config:/home/node/.openclaw
       - clawdbot_workspace:/home/node/clawd
     ports:
       - "${OPENCLAW_GATEWAY_PORT:-18789}:18789"
+      - "${NOVNC_PORT:-6080}:6080"
     init: true
     command:
       [
+        "./scripts/start-vnc.sh",
         "node",
         "dist/index.js",
         "gateway",
@@ -49,11 +56,15 @@ services:
         "${OPENCLAW_GATEWAY_BIND:-lan}",
         "--port",
         "18789",
-        "--allow-unconfigured"
+        "--allow-unconfigured",
       ]
     # Health check for Traefik/Coolify
     healthcheck:
-      test: ["CMD-SHELL", "node -e \"const http = require('http'); const req = http.get('http://localhost:18789/', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }); req.on('error', () => { process.exit(1); });\""]
+      test:
+        [
+          "CMD-SHELL",
+          'node -e "const http = require(''http''); const req = http.get(''http://localhost:18789/'', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }); req.on(''error'', () => { process.exit(1); });"',
+        ]
       interval: 30s
       timeout: 5s
       retries: 3

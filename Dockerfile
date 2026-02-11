@@ -21,6 +21,29 @@ COPY ui/package.json ./ui/package.json
 COPY patches ./patches
 COPY scripts ./scripts
 
+# Install VNC and Browser dependencies
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    bash \
+    ca-certificates \
+    chromium \
+    fluxbox \
+    fonts-liberation \
+    fonts-noto-color-emoji \
+    git \
+    jq \
+    novnc \
+    python3 \
+    socat \
+    websockify \
+    x11vnc \
+    xvfb && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+
+RUN chmod +x ./scripts/start-vnc.sh
+
+
 RUN pnpm install --no-frozen-lockfile
 
 COPY . .
