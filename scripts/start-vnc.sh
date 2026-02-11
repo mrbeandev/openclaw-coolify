@@ -108,5 +108,6 @@ fi
 # 8. Pass control to the main application
 # We set OPENCLAW_BROWSER_CDP_URL env var if not set, so the app uses this browser
 export OPENCLAW_BROWSER_CDP_URL=${OPENCLAW_BROWSER_CDP_URL:-http://127.0.0.1:$CDP_PORT}
+export OPENCLAW_BROWSER_EXECUTABLE_PATH=${OPENCLAW_BROWSER_EXECUTABLE_PATH:-/usr/bin/chromium}
 
 exec "$@"
