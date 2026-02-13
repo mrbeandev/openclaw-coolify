@@ -14,7 +14,59 @@ body {
     background: var(--openclaw-dark) !important;
 }
 
-/* Top status bar */
+/* ==========================================
+   LOGO REPLACEMENT (text → image)
+   noVNC logo is rendered as text:
+     <div class="noVNC_logo"><span>no</span>VNC</div>
+   We hide the text and show our logo as a background image.
+   ========================================== */
+
+/* Connect dialog logo — large centered logo */
+#noVNC_connect_dlg .noVNC_logo {
+    font-size: 0 !important;
+    line-height: 0 !important;
+    color: transparent !important;
+    background: url("../images/icons/novnc-logo.png") center center / contain no-repeat !important;
+    width: 180px !important;
+    height: 180px !important;
+    margin: 0 auto 10px auto !important;
+    filter: drop-shadow(0 0 15px var(--openclaw-glow-strong));
+}
+
+/* Hide the inner <span> text */
+#noVNC_connect_dlg .noVNC_logo span,
+#noVNC_connect_dlg .noVNC_logo br {
+    display: none !important;
+}
+
+/* Sidebar control bar logo — small icon */
+#noVNC_control_bar .noVNC_logo {
+    font-size: 0 !important;
+    line-height: 0 !important;
+    color: transparent !important;
+    background: url("../images/icons/novnc-logo.png") center center / contain no-repeat !important;
+    width: 26px !important;
+    height: 26px !important;
+    margin: 4px auto !important;
+    padding: 0 !important;
+    filter: drop-shadow(0 0 5px var(--openclaw-cyan));
+}
+
+/* Hide the inner <span> and <br> text in sidebar */
+#noVNC_control_bar .noVNC_logo span,
+#noVNC_control_bar .noVNC_logo br {
+    display: none !important;
+}
+
+/* Divider below sidebar logo */
+.noVNC_logo + hr {
+    border-top-color: var(--openclaw-border) !important;
+}
+
+/* ==========================================
+   TOP STATUS BAR
+   ========================================== */
+
 #noVNC_status_bar {
     background-color: var(--openclaw-surface) !important;
     border-bottom: 2px solid var(--openclaw-cyan) !important;
@@ -23,20 +75,15 @@ body {
     backdrop-filter: blur(12px) !important;
 }
 
-/* noVNC logo replacement */
-.noVNC_logo {
-    background-image: url("../images/icons/novnc-logo.png") !important;
-    background-size: contain !important;
-    background-repeat: no-repeat !important;
-    filter: drop-shadow(0 0 8px var(--openclaw-cyan));
-}
+/* ==========================================
+   SIDE CONTROL BAR
+   ========================================== */
 
-/* Side control bar */
 #noVNC_control_bar {
     background: var(--openclaw-surface) !important;
     backdrop-filter: blur(12px) !important;
-    border-left: 1px solid var(--openclaw-border) !important;
-    box-shadow: -2px 0 15px rgba(0, 0, 0, 0.3);
+    border-right: 1px solid var(--openclaw-border) !important;
+    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.3);
 }
 
 /* Control bar handle */
@@ -50,7 +97,10 @@ body {
     box-shadow: 0 0 10px var(--openclaw-glow);
 }
 
-/* Buttons */
+/* ==========================================
+   BUTTONS
+   ========================================== */
+
 .noVNC_button {
     filter: grayscale(1) invert(1) brightness(1.8) !important;
     transition: all 0.25s ease;
@@ -70,7 +120,10 @@ body {
     box-shadow: 0 0 8px var(--openclaw-glow);
 }
 
-/* Panel popups (settings, clipboard, etc.) */
+/* ==========================================
+   PANEL POPUPS (settings, clipboard, etc.)
+   ========================================== */
+
 .noVNC_panel {
     background: var(--openclaw-surface) !important;
     backdrop-filter: blur(16px) !important;
@@ -102,14 +155,25 @@ body {
     outline: none !important;
 }
 
+/* ==========================================
+   CONNECT DIALOG
+   ========================================== */
+
+#noVNC_connect_dlg div {
+    background-color: var(--openclaw-surface) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px var(--openclaw-glow) !important;
+    border-radius: 12px !important;
+}
+
 /* Connect button */
 #noVNC_connect_button {
     background: linear-gradient(135deg, var(--openclaw-cyan), #006699) !important;
     color: white !important;
     border: none !important;
-    border-radius: 6px !important;
-    padding: 8px 20px !important;
+    border-radius: 8px !important;
+    padding: 10px 24px !important;
     font-weight: 600 !important;
+    font-size: 16px !important;
     text-transform: uppercase !important;
     letter-spacing: 0.5px !important;
     box-shadow: 0 2px 10px var(--openclaw-glow);
@@ -123,13 +187,21 @@ body {
     transform: translateY(-1px);
 }
 
-/* Status bar text */
+#noVNC_connect_button div {
+    background: none !important;
+    box-shadow: none !important;
+}
+
+/* Status text */
 #noVNC_status {
     color: #94a3b8 !important;
     font-size: 13px !important;
 }
 
-/* Password dialog */
+/* ==========================================
+   PASSWORD / CREDENTIALS DIALOG
+   ========================================== */
+
 #noVNC_credentials_dlg {
     background: var(--openclaw-surface) !important;
     border: 1px solid var(--openclaw-border) !important;
@@ -137,14 +209,10 @@ body {
     box-shadow: 0 0 40px var(--openclaw-glow), 0 10px 40px rgba(0, 0, 0, 0.6) !important;
 }
 
-/* Watermark logo (background) */
-#noVNC_vnc_logo {
-    display: block !important;
-    opacity: 0.06;
-    pointer-events: none;
-}
+/* ==========================================
+   TRANSITION / MISC
+   ========================================== */
 
-/* Transition overlay */
 #noVNC_transition {
     background: var(--openclaw-darker) !important;
 }
