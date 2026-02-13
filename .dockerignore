@@ -62,4 +62,3 @@ vendor/
 # noVNC branding assets (needed for custom OpenClaw theming)
 !assets/branding/
 !assets/branding/**
-!assets/branding/novnc/app/images/icons/*.png

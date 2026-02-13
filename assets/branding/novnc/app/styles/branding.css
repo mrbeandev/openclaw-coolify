@@ -142,7 +142,7 @@ body {
 .noVNC_panel textarea {
     background-color: rgba(15, 23, 42, 0.6) !important;
     border: 1px solid var(--openclaw-border) !important;
-    color: #e2e8f0 !important;
+    color: black !important;
     border-radius: 4px !important;
     padding: 4px 8px !important;
     transition: border-color 0.2s ease;
