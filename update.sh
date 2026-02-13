@@ -85,7 +85,7 @@ git merge "$TARGET_TAG" --no-edit --allow-unrelated-histories --no-commit -X the
 
 echo "🔧 Preserving local configurations..."
 # Force restore our critical files from the pre-merge state (HEAD)
-for FILE in docker-compose.yaml Dockerfile README.md update.sh scripts/start-vnc.sh; do
+for FILE in docker-compose.yaml .dockerignore Dockerfile README.md update.sh scripts/start-vnc.sh assets/branding; do
     if git checkout HEAD -- "$FILE" 2>/dev/null; then
         echo "   - Restored local $FILE"
         git add "$FILE"

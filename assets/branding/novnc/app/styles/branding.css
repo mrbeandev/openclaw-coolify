@@ -1,0 +1,169 @@
+/* OpenClaw Premium Branding for noVNC */
+:root {
+    --openclaw-cyan: #0088cc;
+    --openclaw-dark: #0f172a;
+    --openclaw-darker: #0a0f1e;
+    --openclaw-glow: rgba(0, 136, 204, 0.4);
+    --openclaw-glow-strong: rgba(0, 136, 204, 0.7);
+    --openclaw-surface: rgba(15, 23, 42, 0.85);
+    --openclaw-border: rgba(0, 136, 204, 0.3);
+}
+
+/* Page background */
+body {
+    background: var(--openclaw-dark) !important;
+}
+
+/* Top status bar */
+#noVNC_status_bar {
+    background-color: var(--openclaw-surface) !important;
+    border-bottom: 2px solid var(--openclaw-cyan) !important;
+    color: #e2e8f0 !important;
+    box-shadow: 0 2px 20px var(--openclaw-glow);
+    backdrop-filter: blur(12px) !important;
+}
+
+/* noVNC logo replacement */
+.noVNC_logo {
+    background-image: url("../images/icons/novnc-logo.png") !important;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    filter: drop-shadow(0 0 8px var(--openclaw-cyan));
+}
+
+/* Side control bar */
+#noVNC_control_bar {
+    background: var(--openclaw-surface) !important;
+    backdrop-filter: blur(12px) !important;
+    border-left: 1px solid var(--openclaw-border) !important;
+    box-shadow: -2px 0 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Control bar handle */
+#noVNC_control_bar_handle {
+    background-color: rgba(15, 23, 42, 0.9) !important;
+    border: 1px solid var(--openclaw-border) !important;
+}
+
+#noVNC_control_bar_handle:hover {
+    background-color: rgba(0, 136, 204, 0.2) !important;
+    box-shadow: 0 0 10px var(--openclaw-glow);
+}
+
+/* Buttons */
+.noVNC_button {
+    filter: grayscale(1) invert(1) brightness(1.8) !important;
+    transition: all 0.25s ease;
+    border-radius: 4px !important;
+}
+
+.noVNC_button:hover {
+    filter: grayscale(0.3) invert(1) brightness(2) !important;
+    transform: scale(1.08);
+    box-shadow: 0 0 12px var(--openclaw-glow);
+    background-color: rgba(0, 136, 204, 0.15) !important;
+}
+
+.noVNC_button.noVNC_selected {
+    background-color: rgba(0, 136, 204, 0.25) !important;
+    border: 1px solid var(--openclaw-cyan) !important;
+    box-shadow: 0 0 8px var(--openclaw-glow);
+}
+
+/* Panel popups (settings, clipboard, etc.) */
+.noVNC_panel {
+    background: var(--openclaw-surface) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1px solid var(--openclaw-border) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px var(--openclaw-glow) !important;
+    border-radius: 8px !important;
+    color: #e2e8f0 !important;
+}
+
+.noVNC_panel label {
+    color: #cbd5e1 !important;
+}
+
+.noVNC_panel input,
+.noVNC_panel select,
+.noVNC_panel textarea {
+    background-color: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid var(--openclaw-border) !important;
+    color: #e2e8f0 !important;
+    border-radius: 4px !important;
+    padding: 4px 8px !important;
+    transition: border-color 0.2s ease;
+}
+
+.noVNC_panel input:focus,
+.noVNC_panel select:focus {
+    border-color: var(--openclaw-cyan) !important;
+    box-shadow: 0 0 8px var(--openclaw-glow);
+    outline: none !important;
+}
+
+/* Connect button */
+#noVNC_connect_button {
+    background: linear-gradient(135deg, var(--openclaw-cyan), #006699) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 8px 20px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    box-shadow: 0 2px 10px var(--openclaw-glow);
+    transition: all 0.3s ease;
+    cursor: pointer !important;
+}
+
+#noVNC_connect_button:hover {
+    background: linear-gradient(135deg, #00aaff, var(--openclaw-cyan)) !important;
+    box-shadow: 0 4px 20px var(--openclaw-glow-strong);
+    transform: translateY(-1px);
+}
+
+/* Status bar text */
+#noVNC_status {
+    color: #94a3b8 !important;
+    font-size: 13px !important;
+}
+
+/* Password dialog */
+#noVNC_credentials_dlg {
+    background: var(--openclaw-surface) !important;
+    border: 1px solid var(--openclaw-border) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 0 40px var(--openclaw-glow), 0 10px 40px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Watermark logo (background) */
+#noVNC_vnc_logo {
+    display: block !important;
+    opacity: 0.06;
+    pointer-events: none;
+}
+
+/* Transition overlay */
+#noVNC_transition {
+    background: var(--openclaw-darker) !important;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--openclaw-darker);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--openclaw-border);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--openclaw-cyan);
+}

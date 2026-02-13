@@ -37,7 +37,50 @@ chmod 600 ~/.vnc/passwd
 # 4. Start VNC Server (x11vnc)
 x11vnc -display :$DISPLAY_NUM -rfbport $VNC_PORT -shared -forever -rfbauth ~/.vnc/passwd -bg -o ~/.vnc/x11vnc.log
 
-# 5. Start noVNC (websockify)
+# 5. Apply noVNC branding (before starting websockify)
+NOVNC_DIR="/usr/share/novnc"
+BRANDING_DIR="/app/assets/branding/novnc"
+
+if [ -d "$BRANDING_DIR" ] && [ -d "$NOVNC_DIR" ]; then
+    echo "🎨 Applying OpenClaw branding to noVNC..."
+
+    # Copy branding assets (logos, favicons, CSS) into noVNC directory
+    cp -r "$BRANDING_DIR"/* "$NOVNC_DIR/" 2>/dev/null || true
+
+    # Inject branding CSS into noVNC HTML files (vnc.html and vnc_lite.html)
+    for HTML_FILE in "$NOVNC_DIR/vnc.html" "$NOVNC_DIR/vnc_lite.html"; do
+        if [ -f "$HTML_FILE" ]; then
+            # Only inject if not already branded
+            if ! grep -q "branding.css" "$HTML_FILE"; then
+                sed -i 's|</head>|<link rel="stylesheet" href="app/styles/branding.css">\n</head>|' "$HTML_FILE"
+                echo "  ✅ Branded: $(basename $HTML_FILE)"
+            fi
+        fi
+    done
+
+    # Replace favicon if branding provides one
+    if [ -f "$NOVNC_DIR/app/images/icons/novnc-favicon.png" ]; then
+        for HTML_FILE in "$NOVNC_DIR/vnc.html" "$NOVNC_DIR/vnc_lite.html"; do
+            if [ -f "$HTML_FILE" ]; then
+                # Update favicon references to use our branded favicon
+                sed -i 's|favicon\.[a-z]*"|novnc-favicon.png"|g' "$HTML_FILE" 2>/dev/null || true
+            fi
+        done
+    fi
+
+    # Update page title
+    for HTML_FILE in "$NOVNC_DIR/vnc.html" "$NOVNC_DIR/vnc_lite.html"; do
+        if [ -f "$HTML_FILE" ]; then
+            sed -i 's|<title>noVNC</title>|<title>OpenClaw Browser</title>|g' "$HTML_FILE" 2>/dev/null || true
+        fi
+    done
+
+    echo "  🎨 noVNC branding applied successfully."
+else
+    echo "⚠️  Branding assets not found at $BRANDING_DIR, using default noVNC theme."
+fi
+
+# 6. Start noVNC (websockify)
 # Check for websockify location (Debian usually /usr/bin/websockify)
 if command -v websockify >/dev/null; then
     websockify --web /usr/share/novnc/ $NOVNC_PORT localhost:$VNC_PORT > /tmp/novnc.log 2>&1 &
@@ -45,7 +88,7 @@ else
     echo "WARNING: websockify not found, noVNC will not be available."
 fi
 
-# 6. Start Chromium (listening on CDP)
+# 7. Start Chromium (listening on CDP)
 # We use --remote-debugging-port to allow OpenClaw to connect
 # Start Chromium in a loop to ensure it stays alive
 # If you (or the AI) close it, it will respawn automatically.
@@ -72,7 +115,7 @@ fi
 echo "Browser environment started."
 echo "CDP endpoint: http://127.0.0.1:$CDP_PORT"
 
-# 7. Configure OpenClaw to use this browser
+# 8. Configure OpenClaw to use this browser
 CONFIG_DIR="$HOME/.openclaw"
 CONFIG_FILE="$CONFIG_DIR/openclaw.json"
 
@@ -105,7 +148,7 @@ else
   echo "WARNING: jq not found, skipping openclaw.json update. Ensure browser.cdpUrl is set manually."
 fi
 
-# 8. Pass control to the main application
+# 9. Pass control to the main application
 # We set OPENCLAW_BROWSER_CDP_URL env var if not set, so the app uses this browser
 export OPENCLAW_BROWSER_CDP_URL=${OPENCLAW_BROWSER_CDP_URL:-http://127.0.0.1:$CDP_PORT}
 export OPENCLAW_BROWSER_EXECUTABLE_PATH=${OPENCLAW_BROWSER_EXECUTABLE_PATH:-/usr/bin/chromium}
