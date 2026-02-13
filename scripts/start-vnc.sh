@@ -38,13 +38,18 @@ chmod 600 ~/.vnc/passwd
 x11vnc -display :$DISPLAY_NUM -rfbport $VNC_PORT -shared -forever -rfbauth ~/.vnc/passwd -bg -o ~/.vnc/x11vnc.log
 
 # 5. Apply noVNC branding (before starting websockify)
-NOVNC_DIR="/usr/share/novnc"
+NOVNC_SRC="/usr/share/novnc"
+NOVNC_DIR="/tmp/novnc-branded"
 BRANDING_DIR="/app/assets/branding/novnc"
 
-if [ -d "$BRANDING_DIR" ] && [ -d "$NOVNC_DIR" ]; then
+if [ -d "$BRANDING_DIR" ] && [ -d "$NOVNC_SRC" ]; then
     echo "🎨 Applying OpenClaw branding to noVNC..."
 
-    # Copy branding assets (logos, favicons, CSS) into noVNC directory
+    # Copy noVNC to a writable location (container runs as non-root 'node' user)
+    rm -rf "$NOVNC_DIR"
+    cp -r "$NOVNC_SRC" "$NOVNC_DIR"
+
+    # Copy branding assets (logos, favicons, CSS) into the writable copy
     cp -r "$BRANDING_DIR"/* "$NOVNC_DIR/" 2>/dev/null || true
 
     # Inject branding CSS into noVNC HTML files (vnc.html and vnc_lite.html)
@@ -62,7 +67,6 @@ if [ -d "$BRANDING_DIR" ] && [ -d "$NOVNC_DIR" ]; then
     if [ -f "$NOVNC_DIR/app/images/icons/novnc-favicon.png" ]; then
         for HTML_FILE in "$NOVNC_DIR/vnc.html" "$NOVNC_DIR/vnc_lite.html"; do
             if [ -f "$HTML_FILE" ]; then
-                # Update favicon references to use our branded favicon
                 sed -i 's|favicon\.[a-z]*"|novnc-favicon.png"|g' "$HTML_FILE" 2>/dev/null || true
             fi
         done
@@ -77,13 +81,14 @@ if [ -d "$BRANDING_DIR" ] && [ -d "$NOVNC_DIR" ]; then
 
     echo "  🎨 noVNC branding applied successfully."
 else
-    echo "⚠️  Branding assets not found at $BRANDING_DIR, using default noVNC theme."
+    echo "⚠️  Branding assets not found, using default noVNC theme."
+    NOVNC_DIR="$NOVNC_SRC"
 fi
 
 # 6. Start noVNC (websockify)
 # Check for websockify location (Debian usually /usr/bin/websockify)
 if command -v websockify >/dev/null; then
-    websockify --web /usr/share/novnc/ $NOVNC_PORT localhost:$VNC_PORT > /tmp/novnc.log 2>&1 &
+    websockify --web "$NOVNC_DIR" $NOVNC_PORT localhost:$VNC_PORT > /tmp/novnc.log 2>&1 &
 else
     echo "WARNING: websockify not found, noVNC will not be available."
 fi
